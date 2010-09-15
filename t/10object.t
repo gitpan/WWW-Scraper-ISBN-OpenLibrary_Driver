@@ -7,15 +7,61 @@ use WWW::Scraper::ISBN;
 
 ###########################################################
 
-my $CHECK_DOMAIN = 'www.google.com';
+my $DRIVER          = 'OpenLibrary';
+my $CHECK_DOMAIN    = 'www.google.com';
+
+my %tests = (
+    '9780861403240' => [
+        [ 'is',     'isbn',         '9780861403240'     ],
+        [ 'is',     'isbn10',       '086140324X'        ],
+        [ 'is',     'isbn13',       '9780861403240'     ],
+        [ 'is',     'ean13',        '9780861403240'     ],
+        [ 'is',     'title',        'The Colour of Magic (Discworld Novels)'    ],
+        [ 'is',     'author',       'Terry Pratchett'   ],
+        [ 'is',     'publisher',    'Colin Smythe'      ],
+        [ 'is',     'pubdate',      'October 1989'      ],
+        [ 'is',     'binding',      'Hardcover'         ],
+        [ 'is',     'pages',        '207'               ],
+        [ 'is',     'width',        '139'               ],
+        [ 'is',     'height',       '213'               ],
+        [ 'is',     'weight',       '379'               ],
+        [ 'is',     'image_link',   'http://covers.openlibrary.org/b/id/652375-L.jpg' ],
+        [ 'is',     'thumb_link',   'http://covers.openlibrary.org/b/id/652375-S.jpg' ],
+        [ 'like',   'book_link',    qr|http://openlibrary.org/books/OL8308023M/The_Colour_of_Magic_| ]
+    ],
+    '9780552557801' => [
+        [ 'is',     'isbn',         '9780552557801'     ],
+        [ 'is',     'isbn10',       '0552557803'        ],
+        [ 'is',     'isbn13',       '9780552557801'     ],
+        [ 'is',     'ean13',        '9780552557801'     ],
+        [ 'is',     'title',        'Nation'            ],
+        [ 'is',     'author',       'Terry Pratchett'   ],
+        [ 'is',     'publisher',    'Corgi'             ],
+        [ 'is',     'pubdate',      'September 14, 2009'],
+        [ 'is',     'binding',      'Mass Market Paperback' ],
+        [ 'is',     'pages',        300                 ],
+        [ 'is',     'width',        109                 ],
+        [ 'is',     'height',       180                 ],
+        [ 'is',     'weight',       221                 ],
+        [ 'is',     'image_link',   'http://covers.openlibrary.org/b/id/6304719-L.jpg' ],
+        [ 'is',     'thumb_link',   'http://covers.openlibrary.org/b/id/6304719-S.jpg' ],
+        [ 'like',   'book_link',    qr|http://openlibrary.org/books/OL24087400M/Nation| ]
+    ],
+);
+
+my $tests = 0;
+for my $isbn (keys %tests) { $tests += scalar( @{ $tests{$isbn} } ) }
+
+
+###########################################################
 
 my $scraper = WWW::Scraper::ISBN->new();
 isa_ok($scraper,'WWW::Scraper::ISBN');
 
 SKIP: {
-	skip "Can't see a network connection", 37   if(pingtest($CHECK_DOMAIN));
+	skip "Can't see a network connection", $tests+1   if(pingtest($CHECK_DOMAIN));
 
-	$scraper->drivers("OpenLibrary");
+	$scraper->drivers($DRIVER);
 
     # this ISBN doesn't exist
 	my $isbn = "1234512345";
@@ -31,69 +77,30 @@ SKIP: {
 		like($record->error,qr/Failed to find that book on|website appears to be unavailable/);
     }
 
-	$isbn   = "9780861403240";
-	$record = $scraper->search($isbn);
-    my $error  = $record->error || '';
+    for my $isbn (keys %tests) {
+        $record = $scraper->search($isbn);
+        my $error  = $record->error || '';
 
-    SKIP: {
-        skip "Website unavailable", 19   if($error =~ /website appears to be unavailable/);
+        SKIP: {
+            skip "Website unavailable", scalar(@{ $tests{$isbn} }) + 2   
+                if($error =~ /website appears to be unavailable/);
 
-        unless($record->found) {
-            diag($record->error);
-        } else {
+            unless($record->found) {
+                diag($record->error);
+            }
+
             is($record->found,1);
-            is($record->found_in,'OpenLibrary');
+            is($record->found_in,$DRIVER);
 
             my $book = $record->book;
-            is($book->{'isbn'},         '9780861403240'         ,'.. isbn found');
-            is($book->{'isbn10'},       '086140324X'            ,'.. isbn10 found');
-            is($book->{'isbn13'},       '9780861403240'         ,'.. isbn13 found');
-            is($book->{'ean13'},        '9780861403240'         ,'.. ean13 found');
-            is($book->{'title'},        'The Colour of Magic (Discworld Novels)'    ,'.. title found');
-            is($book->{'author'},       'Terry Pratchett'       ,'.. author found');
-            like($book->{'book_link'},  qr|http://openlibrary.org/books/OL8308023M/The_Colour_of_Magic_|);
-            is($book->{'image_link'},   'http://covers.openlibrary.org/b/id/652375-L.jpg');
-            is($book->{'thumb_link'},   'http://covers.openlibrary.org/b/id/652375-S.jpg');
-            is($book->{'publisher'},    'Colin Smythe'          ,'.. publisher found');
-            is($book->{'pubdate'},      'October 1989'          ,'.. pubdate found');
-            is($book->{'binding'},      'Hardcover'             ,'.. binding found');
-            is($book->{'pages'},        '207'                   ,'.. pages found');
-            is($book->{'width'},        '139'                   ,'.. width found');
-            is($book->{'height'},       '213'                   ,'.. height found');
-            is($book->{'weight'},       '379'                   ,'.. weight found');
-        }
-    }
+            for my $test (@{ $tests{$isbn} }) {
+                if($test->[0] eq 'ok')          { ok(       $book->{$test->[1]},             ".. '$test->[1]' found [$isbn]"); } 
+                elsif($test->[0] eq 'is')       { is(       $book->{$test->[1]}, $test->[2], ".. '$test->[1]' found [$isbn]"); } 
+                elsif($test->[0] eq 'isnt')     { isnt(     $book->{$test->[1]}, $test->[2], ".. '$test->[1]' found [$isbn]"); } 
+                elsif($test->[0] eq 'like')     { like(     $book->{$test->[1]}, $test->[2], ".. '$test->[1]' found [$isbn]"); } 
+                elsif($test->[0] eq 'unlike')   { unlike(   $book->{$test->[1]}, $test->[2], ".. '$test->[1]' found [$isbn]"); }
 
-	$isbn   = "9780552557801";
-	$record = $scraper->search($isbn);
-    $error  = $record->error || '';
-
-    SKIP: {
-        skip "Website unavailable", 19   if($error =~ /website appears to be unavailable/);
-
-        unless($record->found) {
-            diag($record->error);
-        } else {
-            is($record->found,1);
-            is($record->found_in,'OpenLibrary');
-
-            my $book = $record->book;
-            is($book->{'isbn'},         '9780552557801'         ,'.. isbn found');
-            is($book->{'isbn10'},       '0552557803'            ,'.. isbn10 found');
-            is($book->{'isbn13'},       '9780552557801'         ,'.. isbn13 found');
-            is($book->{'ean13'},        '9780552557801'         ,'.. ean13 found');
-            like($book->{'author'},     qr/Terry Pratchett/     ,'.. author found');
-            is($book->{'title'},        q|Nation|               ,'.. title found');
-            like($book->{'book_link'},  qr|http://openlibrary.org/books/OL24087400M/Nation|);
-            is($book->{'image_link'},   'http://covers.openlibrary.org/b/id/6304719-L.jpg');
-            is($book->{'thumb_link'},   'http://covers.openlibrary.org/b/id/6304719-S.jpg');
-            is($book->{'publisher'},    'Corgi'                 ,'.. publisher found');
-            is($book->{'pubdate'},      'September 14, 2009'    ,'.. pubdate found');
-            is($book->{'binding'},      'Mass Market Paperback' ,'.. binding found');
-            is($book->{'pages'},        300                     ,'.. pages found');
-            is($book->{'width'},        109                     ,'.. width found');
-            is($book->{'height'},       180                     ,'.. height found');
-            is($book->{'weight'},       221                     ,'.. weight found');
+            }
 
             #use Data::Dumper;
             #diag("book=[".Dumper($book)."]");
