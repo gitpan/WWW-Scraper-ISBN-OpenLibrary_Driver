@@ -2,7 +2,9 @@
 use strict;
 
 use lib './t';
-use Test::More tests => 38;
+
+use Data::Dumper;
+use Test::More tests => 40;
 use WWW::Scraper::ISBN;
 
 ###########################################################
@@ -11,47 +13,48 @@ my $DRIVER          = 'OpenLibrary';
 my $CHECK_DOMAIN    = 'www.google.com';
 
 my %tests = (
-    '9780861403240' => [
-        [ 'is',     'isbn',         '9780861403240'     ],
-        [ 'is',     'isbn10',       '086140324X'        ],
-        [ 'is',     'isbn13',       '9780861403240'     ],
-        [ 'is',     'ean13',        '9780861403240'     ],
-        [ 'is',     'title',        'The Colour of Magic (Discworld Novels)'    ],
-        [ 'is',     'author',       'Terry Pratchett'   ],
-        [ 'is',     'publisher',    'Colin Smythe'      ],
-        [ 'is',     'pubdate',      'October 1989'      ],
-        [ 'is',     'binding',      'Hardcover'         ],
-        [ 'is',     'pages',        '207'               ],
-        [ 'is',     'width',        '139'               ],
-        [ 'is',     'height',       '213'               ],
-        [ 'is',     'weight',       '379'               ],
-        [ 'is',     'image_link',   'http://covers.openlibrary.org/b/id/652375-L.jpg' ],
-        [ 'is',     'thumb_link',   'http://covers.openlibrary.org/b/id/652375-S.jpg' ],
-        [ 'like',   'book_link',    qr|http://openlibrary.org/books/OL8308023M/The_Colour_of_Magic_| ]
+    '1558607013' => [
+        [ 'is',     'isbn',         '9781558607019'                 ],
+        [ 'is',     'isbn10',       '1558607013'                    ],
+        [ 'is',     'isbn13',       '9781558607019'                 ],
+        [ 'is',     'ean13',        '9781558607019'                 ],
+        [ 'is',     'title',        'Higher-Order Perl'             ],
+        [ 'is',     'author',       'Mark Jason Dominus'            ],
+        [ 'is',     'publisher',    'Morgan Kaufmann'               ],
+        [ 'is',     'pubdate',      'March 14, 2005'                ],
+        [ 'is',     'binding',      'Paperback'                     ],
+        [ 'is',     'pages',        600                             ],
+        [ 'is',     'width',        190                             ],
+        [ 'is',     'height',       233                             ],
+        [ 'is',     'depth',        35                              ],
+        [ 'is',     'weight',       1179                            ],
+        [ 'is',     'image_link',   'http://covers.openlibrary.org/b/id/784249-L.jpg'    ],
+        [ 'is',     'thumb_link',   'http://covers.openlibrary.org/b/id/784249-S.jpg'    ],
+        [ 'is',     'book_link',    q|http://openlibrary.org/books/OL8606556M/Higher-Order_Perl| ]
     ],
-    '9780552557801' => [
-        [ 'is',     'isbn',         '9780552557801'     ],
-        [ 'is',     'isbn10',       '0552557803'        ],
-        [ 'is',     'isbn13',       '9780552557801'     ],
-        [ 'is',     'ean13',        '9780552557801'     ],
-        [ 'is',     'title',        'Nation'            ],
-        [ 'is',     'author',       'Terry Pratchett'   ],
-        [ 'is',     'publisher',    'Corgi'             ],
-        [ 'is',     'pubdate',      'September 14, 2009'],
-        [ 'is',     'binding',      'Mass Market Paperback' ],
-        [ 'is',     'pages',        300                 ],
-        [ 'is',     'width',        109                 ],
-        [ 'is',     'height',       180                 ],
-        [ 'is',     'weight',       221                 ],
-        [ 'is',     'image_link',   'http://covers.openlibrary.org/b/id/6304719-L.jpg' ],
-        [ 'is',     'thumb_link',   'http://covers.openlibrary.org/b/id/6304719-S.jpg' ],
-        [ 'like',   'book_link',    qr|http://openlibrary.org/books/OL24087400M/Nation| ]
+    '9780571239566' => [
+        [ 'is',     'isbn',         '9780571239566'                 ],
+        [ 'is',     'isbn10',       '0571239560'                    ],
+        [ 'is',     'isbn13',       '9780571239566'                 ],
+        [ 'is',     'ean13',        '9780571239566'                 ],
+        [ 'is',     'title',        'Touching from a Distance'      ],
+        [ 'is',     'author',       'Deborah Curtis'                ],
+        [ 'is',     'publisher',    'Faber and Faber'               ],
+        [ 'is',     'pubdate',      'October 4, 2007'               ],
+        [ 'is',     'binding',      'Paperback'                     ],
+        [ 'is',     'pages',        240                             ],
+        [ 'is',     'width',        127                             ],
+        [ 'is',     'height',       195                             ],
+        [ 'is',     'depth',        20                              ],
+        [ 'is',     'weight',       221                             ],
+        [ 'is',     'image_link',   'http://covers.openlibrary.org/b/id/2521251-L.jpg'    ],
+        [ 'is',     'thumb_link',   'http://covers.openlibrary.org/b/id/2521251-S.jpg'    ],
+        [ 'is',     'book_link',    q|http://openlibrary.org/books/OL10640818M/Touching_from_a_Distance| ]
     ],
 );
 
 my $tests = 0;
 for my $isbn (keys %tests) { $tests += scalar( @{ $tests{$isbn} } ) + 2 }
-
 
 ###########################################################
 
@@ -64,9 +67,8 @@ SKIP: {
 	$scraper->drivers($DRIVER);
 
     # this ISBN doesn't exist
-	my $isbn = "1234512345";
+	my $isbn = "1122334455";
     my $record;
-
     eval { $record = $scraper->search($isbn); };
     if($@) {
         like($@,qr/Invalid ISBN specified/);
@@ -74,12 +76,16 @@ SKIP: {
     elsif($record->found) {
         ok(0,'Unexpectedly found a non-existent book');
     } else {
-		like($record->error,qr/Failed to find that book on|website appears to be unavailable/);
+		like($record->error,qr/Invalid ISBN specified|Failed to find that book|website appears to be unavailable/);
     }
 
     for my $isbn (keys %tests) {
-        $record = $scraper->search($isbn);
-        my $error  = $record->error || '';
+        eval { $record = $scraper->search($isbn) };
+        my $error  = $@ || $record->error || '';
+
+        unless($record) {
+            diag("Failed to create record: $error");
+        }
 
         SKIP: {
             skip "Website unavailable", scalar(@{ $tests{$isbn} }) + 2   
@@ -87,13 +93,14 @@ SKIP: {
             skip "Book unavailable", scalar(@{ $tests{$isbn} }) + 2   
                 if($error =~ /Failed to find that book/ || !$record->found);
 
-            unless($record->found) {
-                diag($record->error);
+            unless($record && $record->found) {
+                diag("error=$error, record error=".$record->error);
             }
 
             is($record->found,1);
             is($record->found_in,$DRIVER);
 
+            my $fail = 0;
             my $book = $record->book;
             for my $test (@{ $tests{$isbn} }) {
                 if($test->[0] eq 'ok')          { ok(       $book->{$test->[1]},             ".. '$test->[1]' found [$isbn]"); } 
@@ -102,10 +109,10 @@ SKIP: {
                 elsif($test->[0] eq 'like')     { like(     $book->{$test->[1]}, $test->[2], ".. '$test->[1]' found [$isbn]"); } 
                 elsif($test->[0] eq 'unlike')   { unlike(   $book->{$test->[1]}, $test->[2], ".. '$test->[1]' found [$isbn]"); }
 
+                $fail = 1   unless(defined $book->{$test->[1]} || ($test->[0] ne 'ok' && !defined $test->[2]));
             }
 
-            #use Data::Dumper;
-            #diag("book=[".Dumper($book)."]");
+            diag("book=[".Dumper($book)."]")    if($fail);
         }
     }
 }

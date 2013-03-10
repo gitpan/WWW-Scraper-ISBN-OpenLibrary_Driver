@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 #--------------------------------------------------------------------------
 
@@ -54,8 +54,8 @@ use constant	IN2MM   => 25.4;        # number of inches in a millimetre (mm)
 
 =item C<search()>
 
-Creates a query string, then passes the appropriate form fields to the 
-OpenLibrary server.
+Creates a query string, then passes the appropriate form fields to the OpenLibrary
+server.
 
 The returned page should be the correct catalog page for that ISBN. If not the
 function returns zero and allows the next driver in the chain to have a go. If
@@ -76,6 +76,7 @@ a valid page is returned, the following fields are returned via the book hash:
   weight        (if known) (in grammes)
   width         (if known) (in millimetres)
   height        (if known) (in millimetres)
+  depth         (if known) (in millimetres)
 
 The book_link and image_link refer back to the OpenLibrary website.
 
@@ -144,11 +145,13 @@ sub search {
 #print STDERR "\n# html=[\n$html\n]\n";
 
     # catch any data not in the JSON
+    ($data->{height},$data->{width},$data->{depth})    
+                                        = $html =~ m!<h6 class="title">Dimensions</h6></td>\s*<td><span class="object">([\d.]+)\s+x\s+([\d.]+)\s+x\s+([\d.]+)\s+inches!i;
     ($data->{binding})                  = $html =~ m!<h6 class="title">Format</h6></td>\s*<td><span class="object">([^<]+)!i;
-    ($data->{height},$data->{width})    = $html =~ m!<h6 class="title">Dimensions</h6></td>\s*<td><span class="object">([\d.]+) x ([\d.]+) x ([\d.]+) inches!i;
 
     $data->{height} = int($data->{height} * IN2MM)  if($data->{height});
     $data->{width}  = int($data->{width}  * IN2MM)  if($data->{width});
+    $data->{depth}  = int($data->{depth}  * IN2MM)  if($data->{depth});
 
 #use Data::Dumper;
 #print STDERR "\n# " . Dumper($data);
@@ -175,7 +178,10 @@ sub search {
 		'pages'		    => $data->{pages},
 		'weight'		=> $data->{weight},
 		'width'		    => $data->{width},
-		'height'		=> $data->{height}
+		'height'		=> $data->{height},
+		'depth'		    => $data->{depth},
+        'json'          => $code,
+        'html'          => $html
 	};
 
 #use Data::Dumper;
@@ -212,7 +218,7 @@ RT system (http://rt.cpan.org/Public/Dist/Display.html?Name=WWW-Scraper-ISBN-Ope
 However, it would help greatly if you are able to pinpoint problems or even
 supply a patch.
 
-Fixes are dependant upon their severity and my availablity. Should a fix not
+Fixes are dependent upon their severity and my availability. Should a fix not
 be forthcoming, please feel free to (politely) remind me.
 
 =head1 AUTHOR
@@ -222,9 +228,9 @@ be forthcoming, please feel free to (politely) remind me.
 
 =head1 COPYRIGHT & LICENSE
 
-  Copyright (C) 2010,2011 Barbie for Miss Barbell Productions
+  Copyright (C) 2010-2013 Barbie for Miss Barbell Productions
 
-  This module is free software; you can redistribute it and/or
+  This distribution is free software; you can redistribute it and/or
   modify it under the Artistic Licence v2.
 
 =cut
