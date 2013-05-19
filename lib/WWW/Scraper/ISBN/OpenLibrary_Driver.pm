@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 #--------------------------------------------------------------------------
 
@@ -146,8 +146,8 @@ sub search {
 
     # catch any data not in the JSON
     ($data->{height},$data->{width},$data->{depth})    
-                                        = $html =~ m!<h6 class="title">Dimensions</h6></td>\s*<td><span class="object">([\d.]+)\s+x\s+([\d.]+)\s+x\s+([\d.]+)\s+inches!i;
-    ($data->{binding})                  = $html =~ m!<h6 class="title">Format</h6></td>\s*<td><span class="object">([^<]+)!i;
+                                        = $html =~ m!<td class="title"><span class="title">Dimensions</span></td>\s*<td><span class="object">([\d.]+)\s+x\s+([\d.]+)\s+x\s+([\d.]+)\s+inches!i;
+    ($data->{binding})                  = $html =~ m!<td class="title"><span class="title">Format</span></td>\s*<td><span class="object">([^<]+)!i;
 
     $data->{height} = int($data->{height} * IN2MM)  if($data->{height});
     $data->{width}  = int($data->{width}  * IN2MM)  if($data->{width});

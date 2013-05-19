@@ -1,5 +1,8 @@
 Revision history for Perl extension WWW-Scraper-ISBN-OpenLibrary_Driver.
 
+0.06    2013-05-19
+        - updated format & dimension patterns due to website changes.
+        
 0.05    2013-03-10
         - expose depth value.
         - added isbn-check.pl to examples.
