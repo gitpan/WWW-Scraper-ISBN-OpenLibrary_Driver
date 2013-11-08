@@ -1,4 +1,9 @@
-Revision history for Perl extension WWW-Scraper-ISBN-OpenLibrary_Driver.
+Revision history for WWW-Scraper-ISBN-OpenLibrary_Driver
+========================================================
+
+0.07    2013-11-08
+        - added git repository links to metadata.
+        - test links now use https.
 
 0.06    2013-05-19
         - updated format & dimension patterns due to website changes.

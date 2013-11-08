@@ -28,9 +28,9 @@ my %tests = (
         [ 'is',     'height',       233                             ],
         [ 'is',     'depth',        35                              ],
         [ 'is',     'weight',       1179                            ],
-        [ 'is',     'image_link',   'http://covers.openlibrary.org/b/id/784249-L.jpg'    ],
-        [ 'is',     'thumb_link',   'http://covers.openlibrary.org/b/id/784249-S.jpg'    ],
-        [ 'is',     'book_link',    q|http://openlibrary.org/books/OL8606556M/Higher-Order_Perl| ]
+        [ 'is',     'image_link',   'https://covers.openlibrary.org/b/id/784249-L.jpg'    ],
+        [ 'is',     'thumb_link',   'https://covers.openlibrary.org/b/id/784249-S.jpg'    ],
+        [ 'is',     'book_link',    q|https://openlibrary.org/books/OL8606556M/Higher-Order_Perl| ]
     ],
     '9780571239566' => [
         [ 'is',     'isbn',         '9780571239566'                 ],
@@ -47,9 +47,9 @@ my %tests = (
         [ 'is',     'height',       195                             ],
         [ 'is',     'depth',        20                              ],
         [ 'is',     'weight',       221                             ],
-        [ 'is',     'image_link',   'http://covers.openlibrary.org/b/id/2521251-L.jpg'    ],
-        [ 'is',     'thumb_link',   'http://covers.openlibrary.org/b/id/2521251-S.jpg'    ],
-        [ 'is',     'book_link',    q|http://openlibrary.org/books/OL10640818M/Touching_from_a_Distance| ]
+        [ 'is',     'image_link',   'https://covers.openlibrary.org/b/id/2521251-L.jpg'    ],
+        [ 'is',     'thumb_link',   'https://covers.openlibrary.org/b/id/2521251-S.jpg'    ],
+        [ 'is',     'book_link',    q|https://openlibrary.org/books/OL10640818M/Touching_from_a_Distance| ]
     ],
 );
 
