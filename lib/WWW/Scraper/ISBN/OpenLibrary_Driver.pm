@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.07';
+$VERSION = '0.08';
 
 #--------------------------------------------------------------------------
 
@@ -111,7 +111,7 @@ sub search {
     return $self->handler("Failed to find that book on OpenLibrary website.")
 	    unless($isbn eq $data->{isbn13} || $isbn eq $data->{isbn10});
 
-    use Data::Dumper;
+#use Data::Dumper;
 #print STDERR "\n# " . Dumper($data);
 
     $data->{isbn13}         = $code->{'ISBN:'.$isbn}{identifiers}{isbn_13}[0];
@@ -228,7 +228,7 @@ be forthcoming, please feel free to (politely) remind me.
 
 =head1 COPYRIGHT & LICENSE
 
-  Copyright (C) 2010-2013 Barbie for Miss Barbell Productions
+  Copyright (C) 2010-2014 Barbie for Miss Barbell Productions
 
   This distribution is free software; you can redistribute it and/or
   modify it under the Artistic Licence v2.

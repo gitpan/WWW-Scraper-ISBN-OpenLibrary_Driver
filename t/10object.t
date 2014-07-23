@@ -4,7 +4,7 @@ use strict;
 use lib './t';
 
 use Data::Dumper;
-use Test::More tests => 40;
+use Test::More tests => 76;
 use WWW::Scraper::ISBN;
 
 ###########################################################
@@ -50,6 +50,42 @@ my %tests = (
         [ 'is',     'image_link',   'https://covers.openlibrary.org/b/id/2521251-L.jpg'    ],
         [ 'is',     'thumb_link',   'https://covers.openlibrary.org/b/id/2521251-S.jpg'    ],
         [ 'is',     'book_link',    q|https://openlibrary.org/books/OL10640818M/Touching_from_a_Distance| ]
+    ],
+    '9780596001735' => [
+        [ 'is',     'isbn',         '9780596001735'         ],
+        [ 'is',     'isbn10',       '0596001738'            ],
+        [ 'is',     'isbn13',       '9780596001735'         ],
+        [ 'is',     'ean13',        '9780596001735'         ],
+        [ 'is',     'title',        'Perl Best Practices'   ],
+        [ 'is',     'author',       'Damian Conway'         ],
+        [ 'is',     'publisher',    q|O'Reilly Media, Inc.| ],
+        [ 'is',     'pubdate',      'July 12, 2005'         ],
+        [ 'is',     'binding',      undef                   ],
+        [ 'is',     'pages',        542                     ],
+        [ 'is',     'width',        undef                   ],
+        [ 'is',     'height',       undef                   ],
+        [ 'is',     'weight',       undef                   ],
+        [ 'is',     'image_link',   'https://covers.openlibrary.org/b/id/388540-L.jpg'    ],
+        [ 'is',     'thumb_link',   'https://covers.openlibrary.org/b/id/388540-S.jpg'    ],
+        [ 'is',     'book_link',    q|https://openlibrary.org/books/OL7580925M/Perl_Best_Practices| ]
+    ],
+    '9780804736480' => [    # this should never been tested, as it doesn't exist in OpenLibrary
+        [ 'is',     'isbn',         'failed'    ],
+        [ 'is',     'isbn10',       'failed'    ],
+        [ 'is',     'isbn13',       'failed'    ],
+        [ 'is',     'ean13',        'failed'    ],
+        [ 'is',     'title',        'failed'    ],
+        [ 'is',     'author',       'failed'    ],
+        [ 'is',     'publisher',    'failed'    ],
+        [ 'is',     'pubdate',      'failed'    ],
+        [ 'is',     'binding',      0           ],
+        [ 'is',     'pages',        0           ],
+        [ 'is',     'width',        0           ],
+        [ 'is',     'height',       0           ],
+        [ 'is',     'weight',       0           ],
+        [ 'is',     'image_link',   'failed'    ],
+        [ 'is',     'thumb_link',   'failed'    ],
+        [ 'is',     'book_link',    q|failed|   ]
     ],
 );
 

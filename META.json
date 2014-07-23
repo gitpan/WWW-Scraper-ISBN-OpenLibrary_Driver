@@ -1,6 +1,6 @@
 {
     "name": "WWW-Scraper-ISBN-OpenLibrary_Driver",
-    "version": "0.07",
+    "version": "0.08",
     "abstract": "Search driver for the OpenLibrary online book catalog",
     "author": ["Barbie <barbie@cpan.org>"],
 
@@ -23,8 +23,8 @@
             "requires" : {
                 "JSON": "0",
                 "WWW::Mechanize": "1.60",
-                "WWW::Scraper::ISBN": "0.25",
-                "WWW::Scraper::ISBN::Driver": "0.18"
+                "WWW::Scraper::ISBN": "1.00",
+                "WWW::Scraper::ISBN::Driver": "1.00"
             }
         },
         "test" : {
@@ -46,7 +46,7 @@
     "provides": {
         "WWW::Scraper::ISBN::OpenLibrary_Driver": {
             "file": "lib/WWW/Scraper/ISBN/OpenLibrary_Driver.pm",
-            "version": "0.07"
+            "version": "0.08"
         }
     },
     "no_index": {
